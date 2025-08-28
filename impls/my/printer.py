@@ -22,6 +22,10 @@ def pr_str(obj, tl=True):
                 if i != len(obj.content) - 1:
                     put(' ')
             put(')') 
+
+        case reader.Kind._nil:   put('nil')
+        case reader.Kind._true:  put('true')
+        case reader.Kind._false: put('false')
     
     if tl:
         put('\n')

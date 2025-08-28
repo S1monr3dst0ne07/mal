@@ -5,16 +5,19 @@ from enum import Enum, auto
 from dataclasses import dataclass
 
 class Kind(Enum):
-    _list = auto()
-    _int  = auto()
-    _str  = auto()
-    _sym  = auto()
+    _list  = auto()
+    _int   = auto()
+    _str   = auto()
+    _sym   = auto()
+    _nil   = auto()
+    _true  = auto()
+    _false = auto()
 
 
 @dataclass
 class Obj:
     kind : Kind
-    content : typing.Any
+    content : typing.Any = None
 
 
 
@@ -81,10 +84,13 @@ def read_list(reader) -> Obj:
 def read_atom(reader) -> Obj:
     tok = reader.next()
     
-    try:
+    if tok.isdigit() or (tok.startswith('-') and tok[-1].isdigit()):
         return Obj(Kind._int, int(tok))
-    except ValueError:
-        return Obj(Kind._sym, tok)
+
+    elif tok == 'nil'  : return Obj(Kind._nil)
+    elif tok == 'true' : return Obj(Kind._true)
+    elif tok == 'false': return Obj(Kind._false)
+    else:                return Obj(Kind._sym, tok)
 
 
 
