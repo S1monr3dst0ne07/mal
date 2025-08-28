@@ -81,6 +81,11 @@ def read_list(reader) -> Obj:
 def read_atom(reader) -> Obj:
     tok = reader.next()
     
-    if tok.isdigit(): return Obj(Kind._int, int(tok))
-    else            : return Obj(Kind._sym, tok)
+    try:
+        return Obj(Kind._int, int(tok))
+    except ValueError:
+        return Obj(Kind._sym, tok)
+
+
+
 
