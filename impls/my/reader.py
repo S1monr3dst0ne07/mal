@@ -1,5 +1,22 @@
 
 import re
+import typing
+from enum import Enum, auto
+from dataclasses import dataclass
+
+class Kind(Enum):
+    _list = auto()
+    _int  = auto()
+    _str  = auto()
+    _sym  = auto()
+
+
+@dataclass
+class Obj:
+    kind : Kind
+    content : typing.Any
+
+
 
 class Reader:
     def __init__(self, stream):
@@ -37,7 +54,7 @@ def read_str(src):
     return read_form(reader)
 
 
-def read_form(reader):
+def read_form(reader) -> Obj:
     match reader.peek()[0]:
         case '(':
             return read_list(reader)
@@ -46,11 +63,12 @@ def read_form(reader):
         case _:
             return read_atom(reader)
 
-def read_string(reader):
-    return reader.next()
+def read_string(reader) -> Obj:
+    content = reader.next().strip('"')
+    return Obj(Kind._str, content)
 
 
-def read_list(reader):
+def read_list(reader) -> Obj:
     reader.expect('(')
 
     acc = []
@@ -58,11 +76,11 @@ def read_list(reader):
         acc.append(read_form(reader))
 
     reader.expect(')')
-    return acc
+    return Obj(Kind._list, acc)
 
-def read_atom(reader):
+def read_atom(reader) -> Obj:
     tok = reader.next()
     
-    if tok.isdigit(): return int(tok)
-    else            : return tok
+    if tok.isdigit(): return Obj(Kind._int, int(tok))
+    else            : return Obj(Kind._sym, tok)
 
