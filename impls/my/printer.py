@@ -26,6 +26,7 @@ def pr_str(obj, tl=True):
         case reader.Kind._nil:   put('nil')
         case reader.Kind._true:  put('true')
         case reader.Kind._false: put('false')
+        case reader.Kind._fn:    put('#<function>')
     
     if tl:
         put('\n')

@@ -12,6 +12,7 @@ class Kind(Enum):
     _nil   = auto()
     _true  = auto()
     _false = auto()
+    _fn    = auto()
 
 
 @dataclass
@@ -61,6 +62,8 @@ def read_form(reader) -> Obj:
     match reader.peek()[0]:
         case '(':
             return read_list(reader)
+        case '[':
+            return read_vector(reader)
         case '"':
             return read_string(reader) 
         case _:
@@ -79,6 +82,16 @@ def read_list(reader) -> Obj:
         acc.append(read_form(reader))
 
     reader.expect(')')
+    return Obj(Kind._list, acc)
+
+def read_vector(reader) -> Obj:
+    reader.expect('[')
+
+    acc = []
+    while reader.peek() != ']':
+        acc.append(read_form(reader))
+
+    reader.expect(']')
     return Obj(Kind._list, acc)
 
 def read_atom(reader) -> Obj:
