@@ -5,7 +5,14 @@ import env as environment
 
 def _mk(fn):
     #MAGIC *thunder*
-    return lambda *args: reader.Obj(reader.Kind._int, fn(*[x.content for x in args]))
+    return reader.Obj(
+        reader.Kind._fn, 
+        lambda *args: 
+            reader.Obj(
+                reader.Kind._int, 
+                fn(*[x.content for x in args])
+            )
+    )
 
 repl_env = environment.Env(outer=None)
 repl_env.set('+', _mk(lambda a, b: a +  b))
@@ -42,7 +49,7 @@ def EVAL(obj, env):
 
                 case l:
                     fn, *args = [EVAL(x, env) for x in l]
-                    return fn(*args)
+                    return fn.content(*args)
 
         case _:
             return obj
